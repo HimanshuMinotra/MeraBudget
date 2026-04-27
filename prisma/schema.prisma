@@ -14,35 +14,42 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User{
-  id            String  @id @default(uuid())
-  clerkUserid   String  @unique  
-  email         String  @unique
+model User {
+  id            String          @id @default(uuid())
+  clerkUserid   String          @unique
+  email         String          @unique
   name          String?
   imageUrl      String?
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
-  createdAt     DateTime   @default(now())  
-  updatedAt     DateTime   @updatedAt
+  goals         SavingsGoal[]
+  bills         BillReminder[]
+  subscriptions Subscription[]
+  splits        SplitExpense[]
+  achievements  Achievement[]
+  streak        UserStreak?
+  preferences   UserPreferences?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
-  @@map("users")  
+  @@map("users")
 }
 
-model Account{
-id            String  @id @default(uuid())
-name          String
-type          AccountType
-balance       Decimal      @default(0)
-isDefault     Boolean        @default(false)
-userId        String
-user       User           @relation(fields: [userId], references:[id], onDelete: Cascade)
-transactions Transaction[]
-createdAt     DateTime   @default(now())  
-updatedAt     DateTime   @updatedAt
+model Account {
+  id           String        @id @default(uuid())
+  name         String
+  type         AccountType
+  balance      Decimal       @default(0)
+  isDefault    Boolean       @default(false)
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-@@index([userId])
-@@map("accounts")
+  @@index([userId])
+  @@map("accounts")
 }
 
 enum AccountType {
@@ -50,25 +57,25 @@ enum AccountType {
   SAVINGS
 }
 
-model Transaction{
-  id                     String   @id @default(uuid())
-  type                   TransactionType
-  amount                 Decimal
-  description            String?
-  date                   DateTime
-  category               String
-  receiptUrl             String?
-  isRecurring            Boolean    @default(false)
-  recurringInterval      RecurringInterval?
-  nextRecurringDate      DateTime?
-  lastProcessed          DateTime?
-  status                 TransactionStatus  @default(COMPLETED)
-  userId                 String
-  user                   User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId              String
-  account                Account         @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
+model Transaction {
+  id                String            @id @default(uuid())
+  type              TransactionType
+  amount            Decimal
+  description       String?
+  date              DateTime
+  category          String
+  receiptUrl        String?
+  isRecurring       Boolean           @default(false)
+  recurringInterval RecurringInterval?
+  nextRecurringDate DateTime?
+  lastProcessed     DateTime?
+  status            TransactionStatus @default(COMPLETED)
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId         String
+  account           Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 
   @@index([userId])
   @@index([accountId])
@@ -79,11 +86,13 @@ enum TransactionType {
   INCOME
   EXPENSE
 }
+
 enum TransactionStatus {
   PENDING
   COMPLETED
   FAILED
 }
+
 enum RecurringInterval {
   DAILY
   WEEKLY
@@ -91,15 +100,115 @@ enum RecurringInterval {
   YEARLY
 }
 
-model Budget{
-   id String    @id @default(uuid())
-   amount  Decimal
-   lastAlertSent  DateTime?
-   userID  String  @unique
-   user    User   @relation(fields: [userID], references: [id], onDelete: Cascade)
-   createdAt  DateTime   @default(now())
-   updatedAt  DateTime   @updatedAt
+model Budget {
+  id            String    @id @default(uuid())
+  amount        Decimal
+  lastAlertSent DateTime?
+  userID        String    @unique
+  user          User      @relation(fields: [userID], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-    @@index([userID])
-    @@map("budgets")
+  @@index([userID])
+  @@map("budgets")
 }
+
+model SavingsGoal {
+  id                  String   @id @default(uuid())
+  name                String
+  targetAmount        Decimal
+  currentAmount       Decimal  @default(0)
+  monthlyContribution Decimal?
+  icon                String?
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([userId])
+  @@map("savings_goals")
+}
+
+model BillReminder {
+  id        String            @id @default(uuid())
+  name      String
+  amount    Decimal
+  dueDate   DateTime
+  frequency RecurringInterval
+  status    String            @default("PENDING") // PENDING, PAID
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@index([userId])
+  @@map("bill_reminders")
+}
+
+model Subscription {
+  id           String            @id @default(uuid())
+  name         String
+  amount       Decimal
+  frequency    RecurringInterval @default(MONTHLY)
+  category     String?
+  nextBilling  DateTime
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model SplitExpense {
+  id           String   @id @default(uuid())
+  description  String
+  totalAmount  Decimal
+  participants Json     // Array of { name: string, share: number }
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@map("split_expenses")
+}
+
+model Achievement {
+  id           String   @id @default(uuid())
+  type         String   // e.g., "DISCIPLINED_SPENDER", "SAVINGS_MASTER"
+  name         String
+  description  String
+  icon         String?
+  unlockedAt   DateTime @default(now())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("achievements")
+}
+
+model UserStreak {
+  id            String   @id @default(uuid())
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastActivity  DateTime @default(now())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_streaks")
+}
+
+model UserPreferences {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthlyIncome     Decimal?
+  budgetAllocations Json?    // Object of { category: percentage }
+  theme             String   @default("dark")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("user_preferences")
+}

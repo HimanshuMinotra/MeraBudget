@@ -6,7 +6,8 @@ import * as ProgressPrimitive from "@radix-ui/react-progress";
 import { cn } from "@/lib/utils";
 
 const Progress = React.forwardRef(
-  ({ className, value, extraStyles, ...props }, ref) => (
+  // Destructure extraStyles so it is consumed here and never forwarded to the DOM
+  ({ className, value, indicatorClassName, extraStyles, ...props }, ref) => (
     <ProgressPrimitive.Root
       ref={ref}
       className={cn(
@@ -16,7 +17,11 @@ const Progress = React.forwardRef(
       {...props}
     >
       <ProgressPrimitive.Indicator
-        className={`h-full w-full flex-1  transition-all ${extraStyles}`}
+        className={cn(
+          "h-full w-full flex-1 transition-all",
+          indicatorClassName,
+          extraStyles   // apply the colour class on the indicator, not the root
+        )}
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
     </ProgressPrimitive.Root>

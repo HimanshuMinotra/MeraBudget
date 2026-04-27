@@ -62,7 +62,7 @@ await createAccountFn(data);
   <DrawerTrigger asChild>{children}</DrawerTrigger>
   <DrawerContent>
     <DrawerHeader>
-      <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+      <DrawerTitle className="text-xl font-bold text-white uppercase tracking-wider">Create New Account</DrawerTitle>
     </DrawerHeader>
   
 
@@ -87,10 +87,9 @@ await createAccountFn(data);
   <SelectTrigger id="type" className="w-full">
     <SelectValue placeholder="Select Type" />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent className="bg-[#0a0818] border-white/10">
     <SelectItem value="CURRENT">Current</SelectItem>
     <SelectItem value="SAVINGS">Savings</SelectItem>
-    
   </SelectContent>
 </Select>
       {errors.type &&(
@@ -111,7 +110,7 @@ await createAccountFn(data);
       )}
     </div>
 
-    <div className="flex items-center justify-between rounded-lg border p-3">
+    <div className="flex items-center justify-between rounded-lg border p-3 border-white/10 bg-white/5">
       <div className="space-y-0.5">
       <label htmlFor="isDefault" className="text-sm font-medium cursor-pointer" >
         Set as Default
@@ -122,7 +121,7 @@ await createAccountFn(data);
       <Switch id="isDefualt"
       onCheckedChange={(checked) => setValue("isDefault", checked)}
       checked={watch("isDefault")}
-      className="data-[state=unchecked]:bg-gray-400 data-[state=checked]:bg-black"
+      className="data-[state=unchecked]:bg-white/10 data-[state=checked]:bg-primary"
       />
     </div>
 <DrawerFooter>

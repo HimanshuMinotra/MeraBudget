@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {db} from "../lib/prisma";
+import {db} from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
 const serializeTransaction =(obj) => {
@@ -61,38 +61,42 @@ export async function CreateAccount(data){
 const serializedAccount =  serializeTransaction(account);
 revalidatePath("/dashboard")
 return { success: true, data: serializedAccount};
-} catch (error){
-return { error: error.message || "Failed to create account" };
- }
+  } catch (error) {
+    console.error("CREATE ACCOUNT ERROR:", error.message);
+    return { error: error.message || "Failed to create account" };
+  }
 }
 
-export async function getUserAccounts(){
-    const {userId} = await auth();
- if (!userId) throw new Error("Unauthorized");
+export async function getUserAccounts() {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
 
- const user = await db.user.findUnique({
- where: {clerkUserid: userId},
- });
+    const user = await db.user.findUnique({
+      where: { clerkUserid: userId },
+    });
 
-if(!user){
- throw new Error("User not found");
- }
+    if (!user) {
+      return []; // Return empty if user not found instead of crashing
+    }
 
- const accounts =await db.account.findMany({
- where:{userId: user.id },
- orderBy:{createdAt: "desc"},
- include:{
-    _count:{
-  select:{
- transactions: true,
- },
- },
- },
- });
+    const accounts = await db.account.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: {
+            transactions: true,
+          },
+        },
+      },
+    });
 
- const serializedAccount = accounts.map(serializeTransaction)
-
-return serializedAccount;
+    return accounts.map(serializeTransaction);
+  } catch (error) {
+    console.error("DB Error in getUserAccounts:", error.message);
+    return []; // Return empty array on DB error to let UI degrade gracefully
+  }
 }
 
 export async function updateDefaultAccount(id) {
@@ -124,7 +128,7 @@ export async function updateDefaultAccount(id) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("UPDATE DEFAULT ERROR:", error);
+    console.error("UPDATE DEFAULT ERROR:", error.message);
     return { error: "Failed to update default account." };
   }
 }
@@ -166,22 +170,41 @@ export async function deleteAccount(id) {
   }
 }
 
-export async function getDashboardData(){
-    const {userId} = await auth();
- if (!userId) throw new Error("Unauthorized");
+export async function getDashboardData(dateFilter = null) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
 
- const user = await db.user.findUnique({
- where: {clerkUserid: userId},
- });
+    const user = await db.user.findUnique({
+      where: { clerkUserid: userId },
+    });
 
- if(!user){
- throw new Error("User not found");
- }
- 
- const transactions = await db.transaction.findMany({
-  where: {userId: user.id},
-  orderBy: {date: "desc"}
- });
+    if (!user) {
+      return [];
+    }
 
- return transactions.map(serializeTransaction);
+    const whereClause = { userId: user.id };
+
+    if (dateFilter) {
+      const start = new Date(dateFilter);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(dateFilter);
+      end.setHours(23, 59, 59, 999);
+
+      whereClause.date = {
+        gte: start,
+        lte: end,
+      };
+    }
+
+    const transactions = await db.transaction.findMany({
+      where: whereClause,
+      orderBy: { date: "desc" }
+    });
+
+    return transactions.map(serializeTransaction);
+  } catch (error) {
+    console.error("DB Error in getDashboardData:", error.message);
+    return [];
+  }
 }

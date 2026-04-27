@@ -112,10 +112,10 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       onValueChange={(value) => setValue("type", value)}
       defaultValue={type}
     >
-  <SelectTrigger className="w-full border-gray-400">
+  <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Type" />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent className="bg-[#0a0818] border-white/10">
     <SelectItem value="EXPENSE">Expense</SelectItem>
     <SelectItem value="INCOME">Income</SelectItem>
   </SelectContent>
@@ -132,7 +132,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
    type="number"
    step="0.01"
    placeholder="0.00"
-   className="border-gray-400"
+   className="border-white/10 bg-white/5"
    {...register("amount")}
 />
 
@@ -147,10 +147,10 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       onValueChange={(value) => setValue("accountId", value)}
       defaultValue={getValues("accountId")}
     >
-  <SelectTrigger className="w-full border-gray-400">
+  <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Account" />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent className="bg-[#0a0818] border-white/10">
     {accounts.map((account) =>(
       <SelectItem key ={account.id} value={account.id}>
         {account.name} (₹{parseFloat(account.balance).toFixed(2)})
@@ -180,10 +180,10 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       onValueChange={(value) => setValue("category", value)}
       defaultValue={getValues("category")}
     >
-  <SelectTrigger className="w-full border-gray-400">
+  <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Category" />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent className="bg-[#0a0818] border-white/10">
     {filteredCategories.map((category) =>(
       <SelectItem key ={category.id} value={category.id}>
         {category.name}
@@ -204,13 +204,13 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
   <Popover>
   <PopoverTrigger asChild>
     <Button variant="outline" 
-    className="w-full pl-3 text-left font-normal border-gray-400">
+    className="w-full pl-3 text-left font-normal border-white/10 bg-white/5">
       {""}
       {date ? format(date, "PPP") : <span>Pick a date</span>}
       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
     </Button>
     </PopoverTrigger>
-  <PopoverContent className="w-auto p-0" align="start">
+  <PopoverContent className="w-auto p-0 bg-[#0a0818] border-white/10" align="start">
     <div className="scale-100 origin-top-right">
     <Calendar 
     mode="single" 
@@ -234,12 +234,12 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
 <div className="space-y-2">
   <label className="text-sm font-medium">Description</label>
   <Input placeholder="Enter Description" {...register("description")}
-  className="border-gray-400" />
+  className="border-white/10 bg-white/5" />
   {errors.description && (
       <p className="text-sm text-red-500">{errors.description.message}</p>
   )}
 </div>
-<div className="flex items-center justify-between rounded-lg border p-3 border-gray-400">
+<div className="flex items-center justify-between rounded-lg border p-3 border-white/10 bg-white/5">
       <div className="space-y-0.5">
       <label htmlFor="isDefault" className="text-sm font-medium cursor-pointer" >
         Recurring Transacrion
@@ -251,7 +251,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       checked={isRecurring}
      onCheckedChange={(checked) => setValue("isRecurring", checked)}
       
-      className="data-[state=unchecked]:bg-gray-400 data-[state=checked]:bg-black"
+      className="data-[state=unchecked]:bg-white/10 data-[state=checked]:bg-primary"
       />
     </div>
 
@@ -263,10 +263,10 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       onValueChange={(value) => setValue("recurringInterval", value)}
       defaultValue={getValues("recurringInterval")}
     >
-  <SelectTrigger className="w-full border-gray-400">
+  <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Interval" />
   </SelectTrigger>
-  <SelectContent>
+  <SelectContent className="bg-[#0a0818] border-white/10">
     <SelectItem value = "DAILY">Daily</SelectItem>
     <SelectItem value = "WEEKLY">Weekly</SelectItem>
     <SelectItem value = "MONTHLY">Monthly</SelectItem>

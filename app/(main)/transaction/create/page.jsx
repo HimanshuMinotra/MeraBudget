@@ -7,9 +7,8 @@ import { getTransaction } from '@/actions/transaction';
 import TransactionFormLoader from '../_components/transaction-form-loader';
 
 const AdTransactionPage = async ({ searchParams }) => {
-
+  const { edit: editId } = (await searchParams) || {};
   const accounts = await getUserAccounts();
-  const editId = searchParams?.edit;
   
   console.log("Edit ID from URL:", editId);
    
@@ -24,9 +23,10 @@ const AdTransactionPage = async ({ searchParams }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-5">
-        <h1 className="text-5xl gradient-title mb-8">
-          {editId ? "Edit" : "Add"} Transaction</h1>
+    <div className="max-w-3xl mx-auto px-5 mb-20 transform-gpu transition-all duration-700">
+        <h1 className="text-5xl sm:text-7xl font-extrabold text-white tracking-tight mb-12 uppercase">
+          {editId ? "Edit" : "New"} <span className="text-primary italic">Transaction</span>
+        </h1>
 
         {/* Render the loader, which will handle the dynamic import */}
         <TransactionFormLoader 

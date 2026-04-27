@@ -8,8 +8,9 @@ import { BarLoader } from "react-spinners";
 import { AccountChart } from "../_components/account-chart";
 
 
-export default  async function AccountsPage ({ params }){
-  const accountData = await getAccountWithTransactions(params.id);
+export default async function AccountsPage({ params }) {
+  const { id } = await params;
+  const accountData = await getAccountWithTransactions(id);
 if (!accountData){
   notFound();
 }
@@ -17,24 +18,29 @@ if (!accountData){
 const {transactions, ...account} = accountData;
   return (
   <div className="space-y-8 px-5 ">
-    <div className="flex gap-4 items-end justify-between">
-    <div>
-      <h1 className="text-5xl sm:text-6xl font-bold  gradient-title capitalize">{accountData.name}</h1>
-      <p className="text-muted-foreground">
-         {account.type.charAt(0) + account.type.slice(1).toLowerCase()} Account</p>
-    </div>
+    <div className="flex flex-col sm:flex-row gap-6 mt-8 sm:items-end justify-between border-b border-white/5 pb-8">
+      <div>
+        <h1 className="text-5xl sm:text-7xl font-extrabold text-white tracking-tight capitalize leading-tight">
+          {accountData.name}
+        </h1>
+        <p className="text-slate-500 font-bold uppercase tracking-[0.2em] mt-2 text-xs">
+          {account.type.toLowerCase()} account summary
+        </p>
+      </div>
 
-    <div className="text-right pb-2">
-      <div className="text-xl sm:text-2xl font-bold">
-        ₹{parseFloat(accountData.balance).toFixed(2)}</div>
-      <p className="text-sm text-muted-foreground">
-        {accountData._count.transactions} Transactions</p>
+      <div className="text-left sm:text-right space-y-1">
+        <div className="text-3xl sm:text-4xl font-bold text-white">
+          ₹{parseFloat(accountData.balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+        </div>
+        <p className="text-xs text-primary font-bold uppercase tracking-widest">
+          {accountData._count.transactions} transactions recorded
+        </p>
+      </div>
     </div>
-</div>
 
 {/*chart Section */}
 
-<Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea"/>}>
+<Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#a855f7"/>}>
 <AccountChart transactions={transactions} />
 </Suspense>
 

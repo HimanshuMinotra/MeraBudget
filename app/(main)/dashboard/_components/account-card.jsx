@@ -8,37 +8,11 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowDownRight, ArrowUpRight, Loader2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { updateDefaultAccount } from "@/actions/accounts";
-import { deleteAccount } from "@/actions/dashboard";
+import { updateDefaultAccount, deleteAccount } from "@/actions/dashboard";
 
-//
-// --- This is the DeleteButton component ---
-//
-function DeleteButton({ onClick, disabled }) {
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="text-red-500 hover:text-red-600"
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {disabled ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <Trash2 className="h-4 w-4" />
-      )}
-    </Button>
-  );
-}
-
-//
-// --- Your updated AccountCard component ---
-//
-const AccountCard = ({ account }) => {
+export default function AccountCard({ account }) {
   const { name, type, balance, id, isDefault } = account;
 
-  // --- useFetch for the SWITCH ---
   const {
     loading: updateDefaultLoading,
     fn: updateDefaultFn,
@@ -46,14 +20,12 @@ const AccountCard = ({ account }) => {
     error: updateError,
   } = useFetch(updateDefaultAccount);
 
-  // --- useFetch for DELETE ---
   const {
     loading: deleteLoading,
     fn: deleteFn,
     data: deletedAccount,
     error: deleteError,
   } = useFetch(deleteAccount);
-
 
   const handleDefaultChange = async (event) => {
     event.preventDefault();
@@ -64,14 +36,13 @@ const AccountCard = ({ account }) => {
     await updateDefaultFn(id);
   };
 
-  // --- Handle Delete Click ---
   const handleDelete = async (event) => {
     event.preventDefault();
-    // You can add an "Are you sure?" popup here
-    await deleteFn(id);
+    if (window.confirm("Are you sure you want to delete this account?")) {
+      await deleteFn(id);
+    }
   };
 
-  // --- useEffect for SWITCH ---
   useEffect(() => {
     if (updatedAccount?.success) {
       toast.success("Default account updated successfully");
@@ -81,8 +52,6 @@ const AccountCard = ({ account }) => {
     }
   }, [updatedAccount, updateError]);
 
-
-  // --- useEffect for DELETE ---
   useEffect(() => {
     if (deletedAccount?.success) {
       toast.success("Account deleted successfully");
@@ -92,57 +61,54 @@ const AccountCard = ({ account }) => {
     }
   }, [deletedAccount, deleteError]);
 
-
-  return(
-
-    <Card className="flex flex-col h-full hover:border border-gray-300  cursor-pointer transform transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-lg">
-      <Link href={`/account/${id}`} className="flex flex-col flex-grow">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>{name}</CardTitle>
-          
-          {/* --- Spinning Switch --- */}
+  return (
+    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative group">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <Link href={`/account/${id}`} className="flex flex-col flex-grow z-10">
+        <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
+          <span className="text-white">{name}</span>
           {updateDefaultLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
           ) : (
             <Switch
               checked={isDefault}
               onClick={handleDefaultChange}
-              className="data-[state=unchecked]:bg-gray-400 data-[state=checked]:bg-black"
+              className="data-[state=checked]:bg-primary scale-75"
             />
           )}
         </CardHeader>
-        <CardContent className="p-6 pt-4 flex-grow">
-          <div className="text-2xl font-bold mb-1">
-            ₹{parseFloat(balance).toFixed(2)}
+        <CardContent className="p-6 flex-grow">
+          <div className="text-3xl font-bold mb-2 text-white">
+            ₹{parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()} Account
+          <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+            {type.toLowerCase()} account
           </p>
         </CardContent>
       </Link>
-      <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
-        
-        {/* --- Income/Expense on the Left --- */}
+
+      <CardFooter className="flex items-center justify-between text-[10px] text-slate-500 border-t border-white/10 pt-4 z-10 bg-white/5">
         <div className="flex items-center gap-4">
-          <div className="flex items-center">
-            <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
-            Income
+          <div className="flex items-center text-teal-400 font-bold uppercase tracking-tighter">
+            <ArrowUpRight className="mr-1 h-3 w-3 shadow-teal-500/50" />
+            + income
           </div>
-          <div className="flex items-center">
-            <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
-            Expense
+          <div className="flex items-center text-red-400 font-bold uppercase tracking-tighter">
+            <ArrowDownRight className="mr-1 h-3 w-3 shadow-red-500/50" />
+            - expense
           </div>
         </div>
-
-        {/* --- UPDATED: Delete Button is now wired up --- */}
-        <DeleteButton
-          onClick={handleDelete}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all rounded-full"
           disabled={deleteLoading}
-        />
-
+          onClick={handleDelete}
+        >
+          {deleteLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+        </Button>
       </CardFooter>
     </Card>
   );
-};
-
-export default AccountCard;
+}

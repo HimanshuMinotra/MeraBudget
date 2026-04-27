@@ -76,16 +76,16 @@ export function AccountChart({ transactions }) {
   }, [filteredData]);
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-        <CardTitle className="text-base font-normal">
-          Transaction Overview
+    <Card className="glass-card">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7 border-b border-white/5">
+        <CardTitle className="text-xs font-semibold uppercase tracking-widest text-primary">
+          Account Overview
         </CardTitle>
         <Select defaultValue={dateRange} onValueChange={setDateRange}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="Select range" />
+          <SelectTrigger className="w-[140px] bg-white/5 border-white/10 rounded-xl">
+            <SelectValue placeholder="Select period" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-[#0a0818] border-white/10">
             {Object.entries(DATE_RANGES).map(([key, { label }]) => (
               <SelectItem key={key} value={key}>
                 {label}
@@ -94,30 +94,30 @@ export function AccountChart({ transactions }) {
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent>
-        <div className="flex justify-around mb-6 text-sm">
-          <div className="text-center">
-            <p className="text-muted-foreground">Total Income</p>
-            <p className="text-lg font-bold text-green-500">
-              ₹{totals.income.toFixed(2)}
+      <CardContent className="pt-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="text-center p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 hover:bg-teal-500/10 transition-all duration-300">
+            <p className="text-[10px] text-teal-400 font-bold uppercase tracking-widest mb-1">Total Income</p>
+            <p className="text-xl font-bold text-white">
+              ₹{totals.income.toLocaleString()}
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-muted-foreground">Total Expenses</p>
-            <p className="text-lg font-bold text-red-500">
-              ₹{totals.expense.toFixed(2)}
+          <div className="text-center p-3 rounded-2xl bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-all duration-300">
+            <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest mb-1">Total Expense</p>
+            <p className="text-xl font-bold text-white">
+              ₹{totals.expense.toLocaleString()}
             </p>
           </div>
-          <div className="text-center">
-            <p className="text-muted-foreground">Net</p>
+          <div className="text-center p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10 hover:bg-purple-500/10 transition-all duration-300">
+            <p className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Net Flow</p>
             <p
-              className={`text-lg font-bold ${
+              className={`text-xl font-bold ${
                 totals.income - totals.expense >= 0
-                  ? "text-green-500"
-                  : "text-red-500"
+                   ? "text-white"
+                   : "text-red-400"
               }`}
             >
-              ₹{(totals.income - totals.expense).toFixed(2)}
+              ₹{(totals.income - totals.expense).toLocaleString()}
             </p>
           </div>
         </div>
@@ -127,39 +127,48 @@ export function AccountChart({ transactions }) {
               data={filteredData}
               margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
               <XAxis
                 dataKey="date"
-                fontSize={12}
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
+                tick={{ fill: "#64748b", fontWeight: "bold" }}
               />
               <YAxis
-                fontSize={12}
+                fontSize={10}
                 tickLine={false}
                 axisLine={false}
+                tick={{ fill: "#64748b", fontWeight: "bold" }}
                 tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip
+                cursor={{ fill: "rgba(124, 58, 237, 0.05)" }}
                 formatter={(value) => [`₹${value}`, undefined]}
                 contentStyle={{
-                  backgroundColor: "hsl(var(--popover))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "var(--radius)",
+                  backgroundColor: "rgba(5, 5, 7, 0.95)",
+                  border: "1px solid rgba(124, 58, 237, 0.2)",
+                  borderRadius: "16px",
+                  backdropFilter: "blur(8px)",
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
                 }}
+                itemStyle={{ color: "#fff", fontWeight: "bold", fontSize: "12px" }}
+                labelStyle={{ color: "#7C3AED", fontWeight: "black", marginBottom: "4px", fontSize: "10px", textTransform: "uppercase" }}
               />
-              <Legend />
+              <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: "10px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "1px" }} />
               <Bar
                 dataKey="income"
                 name="Income"
-                fill="#22c55e"
-                radius={[4, 4, 0, 0]}
+                fill="#2DD4BF"
+                radius={[6, 6, 0, 0]}
+                className="drop-shadow-[0_0_8px_rgba(45,212,191,0.3)]"
               />
               <Bar
                 dataKey="expense"
-                name="Expense"
-                fill="#ef4444"
-                radius={[4, 4, 0, 0]}
+                name="Expenses"
+                fill="#F43F5E"
+                radius={[6, 6, 0, 0]}
+                className="drop-shadow-[0_0_8px_rgba(244,63,94,0.3)]"
               />
             </BarChart>
           </ResponsiveContainer>

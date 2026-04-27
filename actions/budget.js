@@ -4,6 +4,12 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
+const serializeBudget = (budget) => ({
+  ...budget,
+  amount: budget.amount ? Number(budget.amount) : 0,
+  createdAt: budget.createdAt instanceof Date ? budget.createdAt.toISOString() : budget.createdAt,
+  updatedAt: budget.updatedAt instanceof Date ? budget.updatedAt.toISOString() : budget.updatedAt,
+});
 
 export async function getCurrentBudget(accountId) {
   try {
@@ -24,53 +30,29 @@ export async function getCurrentBudget(accountId) {
       },
     });
 
-const currentDate = new Date();
-const startOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1,
-    0 ,0 ,0 , 0
-);
-
-const firstDayOfNextMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1, // Go to next month
-    1,
-    0, 0, 0, 0
-);
-
-const endofMonth = new Date(
-firstDayOfNextMonth.getTime()-1
-);
-
-
-const expenses = await db.transaction.aggregate({
-    where:{
+    const expenses = await db.transaction.aggregate({
+      where: {
         userId: user.id,
         type: "EXPENSE",
-       /* date: {
-            gte: startOfMonth,
-            lte: endofMonth,
-        },
-        ...(accountId && {accountId}),
-    */},
-    _sum:{
+      },
+      _sum: {
         amount: true,
-    }
-});
+      }
+    });
 
-return{
-    budget: budget ? {...budget, amount: budget.amount.toNumber()} : null,
-    currentExpenses: expenses._sum.amount?.toNumber() ?? 0,};
+    return {
+      budget: budget ? serializeBudget(budget) : null,
+      currentExpenses: expenses._sum.amount ? Number(expenses._sum.amount) : 0,
+    };
 
-  }catch (error){
-    console.error("Error fetching budget:", error);
-    throw error;
+  } catch (error) {
+    console.error("Error fetching budget:", error.message);
+    return { budget: null, currentExpenses: 0 };
   }
 }
 
-export async function updateBudget(amount){
- try {
+export async function updateBudget(amount) {
+  try {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
@@ -82,28 +64,26 @@ export async function updateBudget(amount){
       throw new Error("User not found");
     }
 
-
     const budget = await db.budget.upsert({
-        where: {
-            userID: user.id,
-        },
-        update: {
-            amount,
-        },
-        create: {
-            userID: user.id,
-            amount,
-        },
+      where: {
+        userID: user.id,
+      },
+      update: {
+        amount,
+      },
+      create: {
+        userID: user.id,
+        amount,
+      },
     });
-
 
     revalidatePath("/dashboard");
     return {
-        success: true,
-        data: {...budget, amount: budget.amount.toNumber() },
+      success: true,
+      data: serializeBudget(budget),
     };
- } catch (error) {
-    console.error("Error updating budget:", error);
-    return {success: false, error: error.message};
- }   
+  } catch (error) {
+    console.error("Error updating budget:", error.message);
+    return { success: false, error: error.message };
+  }
 }
