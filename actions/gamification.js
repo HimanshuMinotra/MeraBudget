@@ -107,6 +107,7 @@ export async function checkStreaksAndAchievements() {
         allAchievements: [...user.achievements, ...newAchievements] 
     };
   } catch (error) {
+    if (error.message?.includes("Dynamic server usage")) throw error;
     console.error("Gamification Error:", error);
     return { error: error.message };
   }

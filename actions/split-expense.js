@@ -33,6 +33,7 @@ export async function createSplitExpense(data) {
     revalidatePath("/split");
     return { success: true, data: serializeSplitExpense(split) };
   } catch (error) {
+    if (error.message?.includes("Dynamic server usage")) throw error;
     console.error("DB Error in createSplitExpense:", error.message);
     return { success: false, error: error.message };
   }
@@ -56,6 +57,7 @@ export async function getSplitExpenses() {
 
     return { success: true, data: splits.map(serializeSplitExpense) };
   } catch (error) {
+    if (error.message?.includes("Dynamic server usage")) throw error;
     console.error("DB Error in getSplitExpenses:", error.message);
     return { success: false, error: error.message };
   }

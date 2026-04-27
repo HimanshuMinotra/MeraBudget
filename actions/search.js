@@ -140,6 +140,7 @@ export async function searchFinancialData(query) {
 
     return { success: true, results };
   } catch (error) {
+    if (error.message?.includes("Dynamic server usage")) throw error;
     console.error("Search error:", error);
     return { success: false, error: error.message };
   }
