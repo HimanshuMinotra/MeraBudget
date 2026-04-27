@@ -1,6 +1,8 @@
 import { seedTransactions } from "@/actions/seed";
 import { auth } from "@clerk/nextjs/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   // Block seed endpoint in production entirely
   if (process.env.NODE_ENV === "production") {

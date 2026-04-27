@@ -19,12 +19,10 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({ children }) {
   await checkUser();
   return (
-    <ClerkProvider>
-      <html lang="en" className="dark" suppressHydrationWarning>
-        <body className={`${spaceGrotesk.className} bg-[#030207] font-space-grotesk antialiased overflow-x-hidden`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body className={`${spaceGrotesk.className} bg-[#030207] font-space-grotesk antialiased overflow-x-hidden`}><ClerkProvider>
           {/* CINEMATIC GALAXY OVERHAUL */}
           <GalaxyHyperspace />
-          
           {/* OPTIMIZED GALAXY SHADING (Consolidated for Performance) */}
           <div 
             className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-80"
@@ -39,7 +37,6 @@ export default async function RootLayout({ children }) {
               `
             }}
           />
-
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -59,8 +56,7 @@ export default async function RootLayout({ children }) {
               </div>
             </footer>
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider></body>
+    </html>
   );
 }

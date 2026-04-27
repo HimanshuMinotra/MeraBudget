@@ -42,10 +42,10 @@ const clerk = clerkMiddleware(async (auth, req) => {
   return NextResponse.next();
 });
 
-export default createMiddleware(aj, clerk);
+export const proxy = createMiddleware(aj, clerk);
+export default proxy;
 
 export const config = {
-  runtime: 'nodejs',
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params
     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',

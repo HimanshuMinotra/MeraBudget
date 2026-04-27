@@ -1,6 +1,6 @@
 "use client";
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { Home, LayoutDashboard, PenBox, CalendarCheck, Target, Users2, FileBarChart, Search } from "lucide-react";
@@ -52,7 +52,7 @@ const Navbar = () => {
 
         {/* Center Nav Links */}
         <div className="hidden lg:flex items-center justify-center gap-6">
-          <SignedIn>
+          <Show when="signed-in">
             <Link href="/" className="text-sm font-medium text-slate-300 hover:text-white flex items-center gap-1.5 transition-colors">
               <Home size={16} />
               <span>Home</span>
@@ -77,12 +77,12 @@ const Navbar = () => {
               <FileBarChart size={16} />
               <span>Reports</span>
             </Link>
-          </SignedIn>
+          </Show>
         </div>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 md:gap-3 shrink-0">
-          <SignedIn>
+          <Show when="signed-in">
             <Button 
                variant="ghost" 
                size="icon" 
@@ -92,9 +92,9 @@ const Navbar = () => {
             >
               <Search size={20} />
             </Button>
-          </SignedIn>
+          </Show>
           
-          <SignedIn>
+          <Show when="signed-in">
             <Link href={"/transaction/create"}>
               <Button variant="default" size="sm" className="btn-galaxy">
                 <PenBox size={16} className="mr-1.5" />
@@ -108,15 +108,15 @@ const Navbar = () => {
                 },
               }}
             />
-          </SignedIn>
+          </Show>
 
-          <SignedOut>
+          <Show when="signed-out">
             <SignInButton forceRedirectUrl="/dashboard">
               <Button variant="outline" size="default" className="border-white/20 text-white hover:bg-white/10 rounded-2xl text-sm font-semibold backdrop-blur-md">
                 Login
               </Button>
             </SignInButton>
-          </SignedOut>
+          </Show>
         </div>
       </nav>
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
