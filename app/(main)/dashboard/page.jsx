@@ -1,7 +1,8 @@
 import { getDashboardData, getUserAccounts } from "@/actions/dashboard";
+import { getGoals } from "@/actions/goals";
 import CreateAccountDrawer from "@/components/create-account-drawer";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import React, { Suspense } from "react";
 import AccountCard from "./_components/account-card";
 import { getCurrentBudget } from "@/actions/budget";
@@ -22,10 +23,14 @@ import MonthlySummary from "./_components/monthly-summary";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import Link from "next/link";
+import GoalsCard from "./_components/goals-card";
 
 async function DashboardPage({ searchParams }) {
   const { date } = (await searchParams) || {};
   const accounts = await getUserAccounts();
+  const goalsResult = await getGoals();
+  const goals = goalsResult.success ? goalsResult.data : [];
+  
   const defaultAccount = accounts?.find((account) => account.isDefault);
 
   let budgetData = null;
@@ -34,13 +39,35 @@ async function DashboardPage({ searchParams }) {
   }
 
   const transactions = await getDashboardData(date);
-  const allTransactions = await getDashboardData(); // For heatmap to show full month data
+  const allTransactions = await getDashboardData(); 
 
   return (
-    <div className="dashboard-container mt-24 pb-10 space-y-6 page-fade-in px-4">
-      <div className="flex flex-col gap-6 mt-8">
+    <div className="dashboard-container mt-8 pb-20 space-y-8 page-fade-in px-4 overflow-y-visible">
+      <div className="flex flex-col gap-8">
         
-        {/* ── TOP ROW: Monthly Summary & Mood Tracker (Balanced Row) ── */}
+        {/* ── PRIORITY ROW: Create Account & Goals (New Top Position) ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          <CreateAccountDrawer>
+            <Card className="glass-card cursor-pointer group h-full text-center border-primary/20 hover:border-primary/50 transition-all">
+              <CardContent className="flex flex-col items-center justify-center p-6 min-h-[160px] h-full">
+                <div className="p-4 rounded-full bg-primary/10 mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-500 shadow-[0_0_20px_rgba(124,58,237,0.1)]">
+                  <Plus className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-xs font-black text-white uppercase tracking-widest">Create Account</p>
+                <p className="text-[10px] text-slate-500 mt-1 italic">Manage your wallets</p>
+              </CardContent>
+            </Card>
+          </CreateAccountDrawer>
+
+          <GoalsCard goals={goals} />
+
+          {/* Display first two accounts in the top row if they exist */}
+          {accounts.slice(0, 2).map((account) => (
+            <AccountCard key={account.id} account={account} />
+          ))}
+        </div>
+
+        {/* ── ROW 2: Monthly Summary & Mood Tracker ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
           <div className="lg:col-span-3">
              <MonthlySummary transactions={allTransactions || []} />
@@ -50,7 +77,7 @@ async function DashboardPage({ searchParams }) {
           </div>
         </div>
 
-        {/* ── MIDDLE ROW: Compact Spending Heatmap & Salary Smart Planner ── */}
+        {/* ── ROW 3: Spending Heatmap & Salary Smart Planner ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
           <div className="lg:col-span-2">
              <FinancialHeatmap transactions={allTransactions || []} compact={true} />
@@ -58,7 +85,7 @@ async function DashboardPage({ searchParams }) {
                <div className="flex justify-end mt-2">
                  <Link href="/dashboard">
                    <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-                     <X className="mr-2 h-4 w-4" /> Clear Date Filter: {date}
+                     <X className="mr-2 h-4 w-4" /> Clear Filter: {date}
                    </Button>
                  </Link>
                </div>
@@ -69,8 +96,6 @@ async function DashboardPage({ searchParams }) {
           </div>
         </div>
 
-        {/* ── REST OF THE ECOSYSTEM (Balanced below) ── */}
-        
         <Achievements />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
@@ -106,25 +131,14 @@ async function DashboardPage({ searchParams }) {
           </div>
         </div>
 
-        {/* Accounts Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <CreateAccountDrawer>
-            <Card className="glass-card cursor-pointer group h-full text-center">
-              <CardContent className="flex flex-col items-center justify-center p-6 min-h-[160px] h-full">
-                <div className="p-4 rounded-full bg-primary/10 mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-500 shadow-[0_0_20px_rgba(124,58,237,0.1)] group-hover:shadow-[0_0_30px_rgba(124,58,237,0.3)]">
-                  <Plus className="h-10 w-10 text-primary" />
-                </div>
-                <p className="text-sm font-bold text-white uppercase tracking-wider">Add New Account</p>
-                <p className="text-sm text-slate-500 mt-1 italic">Manage your accounts and wallets</p>
-              </CardContent>
-            </Card>
-          </CreateAccountDrawer>
-
-          {accounts.length > 0 &&
-            accounts?.map((account) => (
+        {/* Remaining Accounts Grid */}
+        {accounts.length > 2 && (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {accounts.slice(2).map((account) => (
               <AccountCard key={account.id} account={account} />
             ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

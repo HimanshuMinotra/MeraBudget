@@ -9,6 +9,85 @@ import { Progress } from "@/components/ui/progress";
 import { Target, TrendingUp, Trash2, Edit3, Plus } from "lucide-react";
 import { toast } from "sonner";
 
+// Separate GoalCard component to manage its own "Add Funds" state
+function GoalCard({ goal, onUpdate, onDelete }) {
+  const [addAmount, setAddAmount] = useState("");
+  const progress = (Number(goal.currentAmount) / Number(goal.targetAmount)) * 100;
+
+  const handleAddFunds = () => {
+    const amount = parseFloat(addAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    // Calculate new total amount
+    const newTotal = Number(goal.currentAmount) + amount;
+    onUpdate(goal.id, newTotal);
+    setAddAmount("");
+  };
+
+  return (
+    <Card className="glass-card group h-full flex flex-col justify-between">
+      <CardContent className="p-8 space-y-6">
+        <div className="flex justify-between items-start">
+          <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
+            <Target size={24} />
+          </div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onDelete(goal.id)} 
+            className="opacity-0 group-hover:opacity-100 text-red-500 hover:bg-red-500/10 transition-all rounded-full h-10 w-10"
+          >
+            <Trash2 size={20} />
+          </Button>
+        </div>
+        <div className="space-y-1">
+          <h3 className="font-black text-lg text-white uppercase tracking-widest truncate">{goal.name}</h3>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Target: <span className="text-white">₹{Number(goal.targetAmount).toLocaleString()}</span></p>
+        </div>
+        <div className="space-y-3">
+          <div className="flex justify-between items-end">
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{progress.toFixed(1)}% Complete</span>
+            <span className="text-xs font-semibold text-white">₹{Number(goal.currentAmount).toLocaleString()}</span>
+          </div>
+          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+            <div 
+              className="h-full bg-primary shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-all duration-1000 ease-out" 
+              style={{ width: `${Math.min(progress, 100)}%` }}
+            />
+          </div>
+        </div>
+        <div className="flex gap-3 pt-4 items-end mt-auto">
+          <div className="flex-1 space-y-1.5">
+            <label className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Add Funds</label>
+            <Input 
+              type="number" 
+              placeholder="0.00" 
+              value={addAmount}
+              onChange={(e) => setAddAmount(e.target.value)}
+              className="h-10 text-[10px] font-black bg-white/5 border-white/10 rounded-xl focus:ring-primary/50" 
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleAddFunds();
+                }
+              }}
+            />
+          </div>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            onClick={handleAddFunds}
+            className="h-10 px-4 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/10 hover:text-primary rounded-xl transition-all"
+          >
+            Add
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function GoalsPage() {
   const [goals, setGoals] = useState([]);
   const [name, setName] = useState("");
@@ -26,7 +105,10 @@ export default function GoalsPage() {
   }, []);
 
   const handleCreate = async () => {
-    if (!name || !targetAmount) return;
+    if (!name || !targetAmount) {
+      toast.error("Please fill in Goal Name and Target Amount");
+      return;
+    }
     setLoading(true);
     const result = await createGoal({
       name,
@@ -47,7 +129,7 @@ export default function GoalsPage() {
   const handleUpdate = async (id, newAmount) => {
     const result = await updateGoalProgress(id, parseFloat(newAmount));
     if (result.success) {
-      toast.success("Progress updated!");
+      toast.success("Funds added successfully!");
       fetchData();
     }
   };
@@ -62,7 +144,7 @@ export default function GoalsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 mt-16 space-y-12 page-fade-in">
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 text-center md:text-left">
         <h1 className="text-4xl font-black uppercase tracking-tight text-white">Financial Goals</h1>
         <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Set and track your savings goals.</p>
       </div>
@@ -91,57 +173,21 @@ export default function GoalsPage() {
           </CardContent>
         </Card>
 
-        <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
-          {goals.map((goal) => {
-            const progress = (Number(goal.currentAmount) / Number(goal.targetAmount)) * 100;
-            return (
-              <Card key={goal.id} className="glass-card group">
-                <CardContent className="p-8 space-y-6">
-                  <div className="flex justify-between items-start">
-                    <div className="h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">
-                      <Target size={24} />
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => handleDelete(goal.id)} className="opacity-0 group-hover:opacity-100 text-red-500 hover:bg-red-500/10 transition-all rounded-full h-10 w-10">
-                      <Trash2 size={20} />
-                    </Button>
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="font-black text-lg text-white uppercase tracking-widest">{goal.name}</h3>
-                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Target: <span className="text-white">₹{Number(goal.targetAmount).toLocaleString()}</span></p>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-end">
-                      <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{progress.toFixed(1)}% Complete</span>
-                      <span className="text-xs font-semibold text-white">₹{Number(goal.currentAmount).toLocaleString()}</span>
-                    </div>
-                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
-                      <div 
-                        className="h-full bg-primary shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-all duration-1000 ease-out" 
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-3 pt-4 items-end">
-                    <div className="flex-1 space-y-1.5">
-                       <label className="text-[8px] font-black text-slate-600 uppercase tracking-widest ml-1">Add Funds</label>
-                      <Input 
-                        type="number" 
-                        placeholder="AMOUNT" 
-                        className="h-10 text-[10px] font-black bg-white/5 border-white/10 rounded-xl focus:ring-primary/50" 
-                        onKeyPress={(e) => {
-                          if (e.key === "Enter") {
-                            handleUpdate(goal.id, Number(goal.currentAmount) + parseFloat(e.target.value));
-                            e.target.value = "";
-                          }
-                        }}
-                      />
-                    </div>
-                    <Button size="sm" variant="outline" className="h-10 px-4 text-[10px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary/10 hover:text-primary rounded-xl transition-all">Add</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="lg:col-span-2 grid md:grid-cols-2 gap-6 auto-rows-fr">
+          {goals.map((goal) => (
+            <GoalCard 
+              key={goal.id} 
+              goal={goal} 
+              onUpdate={handleUpdate} 
+              onDelete={handleDelete} 
+            />
+          ))}
+          {goals.length === 0 && (
+            <div className="md:col-span-2 flex flex-col items-center justify-center p-12 glass-card opacity-50 border-dashed">
+              <Target className="h-12 w-12 text-slate-500 mb-4" />
+              <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">No goals yet. Start saving today!</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
