@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "components/ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 import { useForm } from "react-hook-form";
 import { zodResolver} from "@hookform/resolvers/zod";
 import { accountSchema } from "@/app/lib/schema";
@@ -131,7 +131,7 @@ await createAccountFn(data);
     Cancel</Button>
 </DrawerClose>
 
-<Button tyoe="submit" className="flex-1" 
+<Button type="submit" className="flex-1" 
 disabled={createAccountLoading}>
 {createAccountLoading ?(
 <>

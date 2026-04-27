@@ -69,7 +69,7 @@ const Navbar = () => {
         <Link href="/" className="flex items-center gap-3 shrink-0 h-full py-1">
           <div className="relative h-8 md:h-12 w-36 md:w-48">
             <Image
-              src={"/logo-merabudget.png"}
+              src={"/logo-merabudget-v2.png"}
               alt="MeraBudget Logo"
               fill
               priority
