@@ -96,7 +96,7 @@ const Navbar = () => {
           
           <SignedIn>
             <Link href={"/transaction/create"}>
-              <Button className="btn-galaxy h-9 px-5 text-xs">
+              <Button variant="default" size="sm" className="btn-galaxy">
                 <PenBox size={16} className="mr-1.5" />
                 <span className="hidden md:inline">Transaction</span>
               </Button>
@@ -112,7 +112,7 @@ const Navbar = () => {
 
           <SignedOut>
             <SignInButton forceRedirectUrl="/dashboard">
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 h-10 px-6 rounded-2xl text-sm font-semibold backdrop-blur-md">
+              <Button variant="outline" size="default" className="border-white/20 text-white hover:bg-white/10 rounded-2xl text-sm font-semibold backdrop-blur-md">
                 Login
               </Button>
             </SignInButton>

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { MapPin, Navigation, ShoppingBag, Utensils } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -87,7 +86,7 @@ export default function Geofencing() {
     return () => {
       if (watchId.current) navigator.geolocation.clearWatch(watchId.current);
     };
-  }, [isActive]);
+  }, [isActive, currentZone?.name]);
 
   return (
     <Card className="glass-card shadow-indigo-500/10 h-full flex flex-col border-purple-500/10">
@@ -103,7 +102,7 @@ export default function Geofencing() {
       <CardContent className="p-6 flex-1 space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <Label className="text-xs font-bold text-white uppercase tracking-widest">Real-time Alerts</Label>
+            <label className="text-xs font-bold text-white uppercase tracking-widest">Real-time Alerts</label>
             <p className="text-[10px] text-slate-500 font-medium">Auto-notifies near high-spending zones</p>
           </div>
           <Switch 

@@ -138,7 +138,7 @@ const SalaryPlanner = () => {
                       type="number"
                       className="bg-transparent border-b border-white/10 text-[11px] font-bold text-white outline-none w-12 text-right"
                       value={editForm.percentage}
-                      onChange={(e) => setEditForm({...editForm, percentage: e.target.value})}
+                      onChange={(e) => setEditForm({...editForm, percentage: Number(e.target.value)})}
                     />
                     <span className="text-[10px] text-slate-500">%</span>
                   </div>
@@ -180,6 +180,7 @@ const SalaryPlanner = () => {
           {isCustomizing && (
             <Button 
               variant="outline" 
+              size="default"
               onClick={addCategory}
               className="w-full border-dashed border-white/10 hover:border-purple-500/50 bg-transparent text-[10px] uppercase font-black tracking-widest text-slate-500 hover:text-white"
             >
