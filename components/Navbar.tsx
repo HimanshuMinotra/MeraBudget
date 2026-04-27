@@ -69,11 +69,11 @@ const Navbar = () => {
         <Link href="/" className="flex items-center gap-3 shrink-0 h-full py-1">
           <div className="relative h-9 md:h-12 w-40 md:w-52">
             <Image
-              src={"/logo-merabudget-v4.png"}
+              src={"/logo-merabudget.svg"}
               alt="MeraBudget Logo"
               fill
               priority
-              className="object-contain transition-all duration-500 hover:scale-105 brightness-150 drop-shadow-[0_0_12px_rgba(168,85,247,0.4)]"
+              className="object-contain transition-all duration-500 hover:scale-105"
             />
           </div>
         </Link>
