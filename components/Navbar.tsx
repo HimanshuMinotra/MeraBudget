@@ -67,9 +67,9 @@ const Navbar = () => {
       <nav className="container mx-auto px-4 flex items-center justify-between h-14">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 shrink-0 h-full py-1">
-          <div className="relative h-8 md:h-10 w-32 md:w-40">
+          <div className="relative h-9 md:h-12 w-40 md:w-52">
             <Image
-              src={"/logo-merabudget-v3.png"}
+              src={"/logo-merabudget-v4.png"}
               alt="MeraBudget Logo"
               fill
               priority
