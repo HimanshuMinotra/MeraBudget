@@ -34,6 +34,7 @@ export async function createBill(data) {
     revalidatePath("/bills");
     return { success: true, data: serializeBill(bill) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }
@@ -56,6 +57,7 @@ export async function getBills() {
 
     return { success: true, data: bills.map(serializeBill) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }
@@ -74,6 +76,7 @@ export async function updateBillStatus(id, status) {
     revalidatePath("/bills");
     return { success: true, data: serializeBill(bill) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }
@@ -91,6 +94,7 @@ export async function deleteBill(id) {
     revalidatePath("/bills");
     return { success: true };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }

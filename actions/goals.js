@@ -38,6 +38,7 @@ export async function createGoal(data) {
     revalidatePath("/goals");
     return { success: true, data: serializeGoal(goal) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in createGoal:", error.message);
     return { success: false, error: error.message };
   }
@@ -61,6 +62,7 @@ export async function getGoals() {
 
     return { success: true, data: goals.map(serializeGoal) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in getGoals:", error.message);
     return { success: false, error: error.message };
   }

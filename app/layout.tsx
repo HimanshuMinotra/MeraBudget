@@ -14,6 +14,8 @@ export const metadata = {
   description: "Advanced Personal Finance Management by MeraBudget",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({ children }) {
   await checkUser();
   return (

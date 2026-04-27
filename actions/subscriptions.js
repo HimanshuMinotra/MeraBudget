@@ -34,6 +34,7 @@ export async function createSubscription(data) {
     revalidatePath("/subscriptions");
     return { success: true, data: serializeSubscription(subscription) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }
@@ -56,6 +57,7 @@ export async function getSubscriptions() {
 
     return { success: true, data: subscriptions.map(serializeSubscription) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }
@@ -73,6 +75,7 @@ export async function deleteSubscription(id) {
     revalidatePath("/subscriptions");
     return { success: true };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return { success: false, error: error.message };
   }
 }

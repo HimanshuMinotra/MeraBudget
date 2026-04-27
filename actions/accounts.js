@@ -59,6 +59,7 @@ export async function updateDefaultAccount(accountId) {
     revalidatePath("/dashboard");
     return { success: true, data: serializeTransaction(account) };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in updateDefaultAccount:", error.message);
     return { success: false, error: error.message };
   }
@@ -96,6 +97,7 @@ export async function getAccountWithTransactions(accountId) {
       transactions: account.transactions.map(serializeTransaction),
     };
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in getAccountWithTransactions:", error.message);
     return null;
   }

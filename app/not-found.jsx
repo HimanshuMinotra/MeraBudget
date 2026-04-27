@@ -1,6 +1,8 @@
 import Link from "next/link";
 import React from "react";
 
+export const dynamic = "force-dynamic";
+
 import Dashboard from "./(main)/dashboard/page";
 import { Button } from "../components/ui/button";
 

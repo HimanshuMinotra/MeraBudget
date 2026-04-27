@@ -94,6 +94,7 @@ export async function getUserAccounts() {
 
     return accounts.map(serializeTransaction);
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in getUserAccounts:", error.message);
     return []; // Return empty array on DB error to let UI degrade gracefully
   }
@@ -204,6 +205,7 @@ export async function getDashboardData(dateFilter = null) {
 
     return transactions.map(serializeTransaction);
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     console.error("DB Error in getDashboardData:", error.message);
     return [];
   }

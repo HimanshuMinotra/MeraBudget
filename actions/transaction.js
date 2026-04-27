@@ -110,9 +110,10 @@ export async function createTransaction(data){
     revalidatePath(`/account/${transaction.accountId}`);
 
     return {success: true, data: serializeAmount(transaction) };
- } catch (error) {
+  } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     return {success:false,message:error.message};
- }
+  }
 }
 
 function calculateNextRecurringDate(startDate, interval){
@@ -307,6 +308,7 @@ export async function updateTransaction(id, data) {
     return { success: true, data:{accountId: transaction.accountId}  };
 
   } catch (error) {
+    if (error.message.includes("Dynamic server usage")) throw error;
     // FIX: Return an object instead of throwing
     return { success: false, message: error.message };
   }
